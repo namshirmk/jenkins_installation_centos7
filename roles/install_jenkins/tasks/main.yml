@@ -1,0 +1,42 @@
+---
+
+- include: configure_repo.yml
+
+- name: Setup Epel Repo
+  yum:
+    name: epel_release
+    state: latest
+
+- name: Install Java
+  yum:
+    name: java-1.8.0-openjdk.x86_64
+    state: installed
+
+- name: Setup Environment variables
+  environment:
+      JAVA_HOME: /usr/lib/jvm/jre-1.8.0-openjdk
+      JRE_HOME: /usr/lib/jvm/jre
+
+- name: Print Environment variable for Review
+  shell: echo $JAVA_HOME && echo $JRE_HOME
+
+- name: Install Jenkins
+  yum:
+    name: jenkins
+    state: latest
+
+- name: Enable and Start Jenkins
+  service:
+    name: jenkins
+    enabled: yes
+    state: started
+
+- name: Add jenkins user into sudoers for sudo access
+  lineinfile:
+    dest: /etc/sudoers
+    line: "{{ item.line }}"
+    create: yes
+    state: present
+  with_items:
+    - { line: jenkins ALL=(ALL) NOPASSWD: ALL' }
+    - { line: 'Defaults:jenkins !requiretty' }

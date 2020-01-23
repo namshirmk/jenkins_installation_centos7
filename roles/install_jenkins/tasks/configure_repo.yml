@@ -1,0 +1,16 @@
+---
+- name: Install python-pycurl
+  yum:
+    name: python-pycurl
+    state: installed
+
+- name: Inmport Jenkins Key
+  rpm_key:
+    key: https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+    state: present
+    validate_certs: no
+
+- name: Setup Jenkins repo
+  get_url:
+    url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+    dest: /etc/yum.repos.d/jenkins.repo
