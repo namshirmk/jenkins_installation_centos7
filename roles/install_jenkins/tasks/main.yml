@@ -4,7 +4,7 @@
 
 - name: Setup Epel Repo
   yum:
-    name: epel_release
+    name: epel-release
     state: latest
 
 - name: Install Java
@@ -12,10 +12,17 @@
     name: java-1.8.0-openjdk.x86_64
     state: installed
 
-- name: Setup Environment variables
-  environment:
-      JAVA_HOME: /usr/lib/jvm/jre-1.8.0-openjdk
-      JRE_HOME: /usr/lib/jvm/jre
+- name: Backup profile file
+  command: cp -pr /etc/profile /etc/profile.bak
+
+- name: Setup Environment Variable JAVA_HOME
+  shell: echo 'export JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk' | sudo tee -a /etc/profile
+
+- name: Setup Environment Variable JRE_HOME
+  shell: echo 'export JRE_HOME=/usr/lib/jvm/jre' | sudo tee -a /etc/profile
+
+- name: Source /etc/profile
+  shell: source /etc/profile
 
 - name: Print Environment variable for Review
   shell: echo $JAVA_HOME && echo $JRE_HOME
@@ -38,5 +45,6 @@
     create: yes
     state: present
   with_items:
-    - { line: jenkins ALL=(ALL) NOPASSWD: ALL' }
+    - { line: 'jenkins ALL=(ALL) NOPASSWD: ALL' }
     - { line: 'Defaults:jenkins !requiretty' }
+
